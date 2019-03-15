@@ -2,41 +2,12 @@
 #include "Analisator.h"
 
 Analisator::Analisator()
-	:keywords(initialKeywords())
-	,delimiters(initialDelimiters())
-	,operators(initialOperators())
-	,tokenNames(initialTokenNames())
+	:keywords(letterDefiner.initialKeywords())
+	,letters(letterDefiner.initialLetters())
+	,numbers(letterDefiner.initialNumbers())
+	,operators(letterDefiner.initialOperators())
+	,delimiters(letterDefiner.initialDelimiters())
 {
-}
-
-vector<string> Analisator::initialKeywords(){
-	vector<string> k;
-	k.push_back("for");
-	k.push_back("break");
-	k.push_back("if");
-	k.push_back("else");
-	k.push_back("println");
-	k.push_back("while");
-	return k;
-}
-
-vector<char> Analisator::initialDelimiters() {
-	vector<char> d;
-	d.push_back(' ');
-	d.push_back(';');
-	d.push_back(',');
-	return d;
-}
-
-vector<char> Analisator::initialOperators() {
-	vector<char> o;
-	o.push_back('+');
-	o.push_back('-');
-	o.push_back('*');
-	o.push_back('/');
-	o.push_back('%');
-	o.push_back('=');
-	return o;
 }
 
 map<TOKEN_TYPES, string> Analisator::initialTokenNames() {
@@ -51,31 +22,70 @@ map<TOKEN_TYPES, string> Analisator::initialTokenNames() {
 void Analisator::readFile() {
 	ifstream fin("input.txt");
 	string fileLine;
-	string lexem;
 	while (getline(fin, fileLine))
 	{
-		for (size_t i = 0; i <fileLine.size(); i++)
-		{
-			if (find(delimiters.begin(), delimiters.end(), fileLine[i])==delimiters.end()) {
-				lexem += fileLine[i];
-			}
-			else if (find(delimiters.begin(), delimiters.end(), fileLine[i]) != delimiters.end()){
-				lexems.push_back(lexem);
-				lexems.push_back(lexem = fileLine[i]);
-				lexem = "";
-			}
-		}
-		if (lexem.size() != 0) {
-			lexems.push_back(lexem);
-			lexem = "";
-		}
+		parseLexems(fileLine);
 	}
 	fin.close();
 }
 
-void Analisator::testCase() {
-	readFile();
-	for (auto el : lexems) {
-		cout << "\'"<<el << "\'" << endl;
+void Analisator::parseLexems(string &fileLine) {
+	string  lexem;
+	char letter;
+	int i = 0;
+	
+	while (i < fileLine.size())
+	{
+		stringstream ss;
+		string s;
+		letter = fileLine[i];
+		ss << letter;
+		ss >> s;
+
+		if (find(delimiters.begin(), delimiters.end(), letter) != delimiters.end()) {
+
+			if (lexem.size() != 0) {
+				lexemList.push_back(lexem);
+				cout << "\'" << lexem << "\'" << endl;
+			}
+			lexemList.push_back(s);
+			cout << "\'" << s << "\'" << endl;
+			lexem.clear();
+		}
+		else {
+			lexem+=s;
+		}
+		i++;
+	}
+
+	if (lexem.size()!=0) {
+		lexemList.push_back(lexem);
+		cout << "\'" << lexem << "\'" << endl;
 	}
 }
+
+void Analisator::testCase() {
+	readFile();
+	/*
+	for (auto el : lexemList) {
+		cout << "\'"<<el << "\'" << endl;
+	}*/
+}
+
+
+/*
+for (size_t i = 0; i <fileLine.size(); i++)
+{
+if (find(delimiters.begin(), delimiters.end(), fileLine[i]) == delimiters.end()) {
+lexem += fileLine[i];
+}
+else if (find(delimiters.begin(), delimiters.end(), fileLine[i]) != delimiters.end()) {
+lexemList.push_back(lexem);
+lexemList.push_back(lexem = fileLine[i]);
+lexem = "";
+}
+}
+if (lexem.size() != 0) {
+lexemList.push_back(lexem);
+lexem = "";
+}*/

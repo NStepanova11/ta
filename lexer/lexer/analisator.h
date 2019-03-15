@@ -6,29 +6,35 @@
 #include <iostream>
 #include <fstream>
 #include <algorithm>
+#include <sstream>
+#include "letterDefiner.h"
 
 using namespace std;
 
 const enum TOKEN_TYPES {
 	KEYWORD,
 	DELIMITER,
-	OPERATOR
+	OPERATOR,
+	DEC_NUM
 };
 
 class Analisator {
 private:
-	vector<string> keywords;
 	vector<char> delimiters;
 	vector<char> operators;
-	map<TOKEN_TYPES, string> tokenNames;
-	vector<string> lexems;
+	vector<char> numbers;
+	vector<char> letters;
+	vector<string> keywords;
+
+	letterDefiner letterDefiner;
+	map<TOKEN_TYPES, string> tokenNamesMap;
+	vector<string> lexemList;
+
 public:
 	Analisator();
-	vector<string> initialKeywords();
-	vector<char> initialDelimiters();
-	vector<char> initialOperators();
 	map<TOKEN_TYPES, string> initialTokenNames();
 	void readFile();
+	void parseLexems(string &fileLine);
 
 	void testCase();
 };
