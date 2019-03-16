@@ -21,17 +21,17 @@ private:
 
 	letterDefiner letterDefiner;
 	map <TOKEN_STATUS, vector<LETTER_TYPES>> lettersOfTokenMap;
-	//map<TOKEN_TYPES, string> tokenNamesMap;
-	vector<pair<string, string>> lexemList;
+	map <TOKEN_STATUS, string> tokenName;
+	vector<pair<string, string >> lexemList;
 
 public:
 	Analisator();
-	//map<TOKEN_TYPES, string> initialTokenNames();
 	void readFile();
-	void parseLexems(string &fileLine);
 	void checkLexemTypes(string &fileLine);
 	LETTER_TYPES getLetterType(char c);
 	void generateTokensTable();
 	string getTextLexemType(string word);
+	string getNumberLexemType(string word);
+
 	void testCase();
 };

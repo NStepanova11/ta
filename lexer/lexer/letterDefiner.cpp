@@ -17,14 +17,6 @@ vector<char> letterDefiner::initialOperators() {
 	o.push_back('/');
 	o.push_back('%');
 	o.push_back('=');
-	o.push_back('+=');
-	o.push_back('-=');
-	o.push_back('*=');
-	o.push_back('/=');
-	o.push_back('%=');
-	o.push_back('==');
-	o.push_back('++');
-	o.push_back('--');
 	return o;
 }
 
@@ -40,6 +32,7 @@ vector <char> letterDefiner::initialNumbers() {
 	return n;
 }
 
+//[A-Z, a-z,0-9, _ ]
 vector <char> letterDefiner::initialLetters() {
 	vector<char> l;
 	char letter = 'a';
@@ -78,13 +71,19 @@ vector<string> letterDefiner::initialKeywords() {
 	return k;
 }
 
-map <TOKEN_STATUS, vector<LETTER_TYPES>> letterDefiner::generateLettersOfTokenMap(){
-	lettersOfTokenMap = {
-		{ TOKEN_STATUS::KEYWORD, {LETTER_TYPES::LETTER}},
-		{ TOKEN_STATUS::NUMBER,{ LETTER_TYPES::NUM }},
-		{ TOKEN_STATUS::DELIMITER, {LETTER_TYPES::DEL}},
-		{ TOKEN_STATUS::OPERATOR, {LETTER_TYPES::OPERATION}},
-		{ TOKEN_STATUS::ID, {LETTER_TYPES::LETTER, LETTER_TYPES::NUM}}
+map <TOKEN_STATUS, string> letterDefiner::defineTokenNames() {
+	map <TOKEN_STATUS, string> tokenName = {
+		{ TOKEN_STATUS::ERR, "ERR"},
+		{ TOKEN_STATUS::NUM2, "NUM2" },
+		{ TOKEN_STATUS::NUM8, "NUM8" },
+		{ TOKEN_STATUS::NUM10, "NUM10" },
+		{ TOKEN_STATUS::NUM16, "NUM16" },
+		{ TOKEN_STATUS::ID, "ID" },
+		{ TOKEN_STATUS::KEYWORD, "KEYWORD" },
+		{ TOKEN_STATUS::DELIMITER, "DELIMITER" },
+		{ TOKEN_STATUS::OPERATOR, "OPERATOR" },
+		{ TOKEN_STATUS::SINGLE_COMMENT, "SINGLE_COMMENT" },
+		{ TOKEN_STATUS::MULTI_COMMENT, "MULTI_COMMENT" }
 	};
-	return lettersOfTokenMap;
+	return tokenName;
 }

@@ -7,19 +7,10 @@ Analisator::Analisator()
 	,numbers(letterDefiner.initialNumbers())
 	,operators(letterDefiner.initialOperators())
 	,delimiters(letterDefiner.initialDelimiters())
-	, lettersOfTokenMap(letterDefiner.generateLettersOfTokenMap())
+	,tokenName(letterDefiner.defineTokenNames())
 {
 }
-/*
-map<TOKEN_TYPES, string> Analisator::initialTokenNames() {
-	map<TOKEN_TYPES, string> tNames = {
-		{ TOKEN_TYPES::KEYWORD, "KEYWORD" },
-		{ TOKEN_TYPES::DELIMITER, "DELIMITER" },
-		{ TOKEN_TYPES::OPERATOR, "OPERATOR" }
-	};
-	return tNames;
-}
-*/
+
 void Analisator::readFile() {
 	ifstream fin("input.txt");
 	string fileLine;
@@ -27,55 +18,13 @@ void Analisator::readFile() {
 	{
 		checkLexemTypes(fileLine);
 	}
-	fin.close();
+	fin.close();	
 }
-
-/*
-void Analisator::parseLexems(string &fileLine) {
-	string  lexem;
-	char c;
-	int i = 0;
-	map<int, pair<LETTER_TYPES, string>> tokenTypesTable;
-	while (i < fileLine.size())
-	{
-		stringstream ss;
-		string letter;
-		c = fileLine[i];
-		LETTER_TYPES lt = getLetterType(c);
-		ss << c;
-		ss >> letter;
-		int id = 1;
-	
-		if (lt == LETTER_TYPES::CHAR_DELIMITER){
-
-			if (lexem.size() != 0) {
-				lexemList.push_back(lexem);
-				cout << "\'" << lexem << "\'" << endl;
-			}
-			lexemList.push_back(letter);
-			cout << "\'" << letter << "\'" << endl;
-			lexem.clear();
-		}
-		else {
-			lexem+= letter;
-		}
-		i++;
-	}
-
-	if (lexem.size()!=0) {
-		lexemList.push_back(lexem);
-		cout << "\'" << lexem << "\'" << endl;
-	}
-}
-*/
 
 void Analisator::testCase() {
 	readFile();
-	generateTokensTable();
-	/*
-	for (auto el : lexemList) {
-		cout << "\'"<<el << "\'" << endl;
-	}*/
+	getNumberLexemType("9");
+	//generateTokensTable();
 }
 
 void Analisator::checkLexemTypes(string &fileLine) {
@@ -101,9 +50,8 @@ void Analisator::checkLexemTypes(string &fileLine) {
 				i++;
 				chr = fileLine[i];
 				currType = getLetterType(chr);
-			} while ((currType == LETTER_TYPES::LETTER || currType == LETTER_TYPES::NUM ) && i < fileLine.size());
-			//lexemProps.push_back(word);
-			//lexemProps.push_back(getTextLexemType(word));
+			} while (currType!=LETTER_TYPES::DEL && currType != LETTER_TYPES::OPERATION && i < fileLine.size());
+			//while ((currType == LETTER_TYPES::LETTER || currType == LETTER_TYPES::NUM ) && i < fileLine.size());
 			lexemList.push_back(pair<string, string>(word, getTextLexemType(word)));
 			cout << "\'" << word << "\'" << endl;
 			word.clear();
@@ -116,10 +64,9 @@ void Analisator::checkLexemTypes(string &fileLine) {
 				i++;
 				chr = fileLine[i];
 				currType = getLetterType(chr);
-			} while ((currType == LETTER_TYPES::NUM) && i < fileLine.size());
-			//lexemProps.push_back(word);
-			//lexemProps.push_back("num");
-			lexemList.push_back(pair<string, string>(word, "num"));
+			} while (currType != LETTER_TYPES::DEL && currType != LETTER_TYPES::OPERATION && i < fileLine.size());
+			//while ((currType == LETTER_TYPES::NUM) && i < fileLine.size());
+			lexemList.push_back(pair<string, string>(word, "number"));
 			cout << "\'" << word << "\'" << endl;
 			word.clear();
 		}
@@ -131,9 +78,8 @@ void Analisator::checkLexemTypes(string &fileLine) {
 				chr = fileLine[i];
 				currType = getLetterType(chr);
 			} while ((currType == LETTER_TYPES::OPERATION) && i < fileLine.size());
-			//lexemProps.push_back(word);
-			//lexemProps.push_back("operator");
-			lexemList.push_back(pair<string, string>(word, "operation"));
+
+			lexemList.push_back(pair<string, string>(word, tokenName.at(TOKEN_STATUS::OPERATOR))); //"operation"));
 			cout << "\'" << word << "\'" << endl;
 			word.clear();
 		}
@@ -141,7 +87,7 @@ void Analisator::checkLexemTypes(string &fileLine) {
 			if (chr != ' ')
 			{
 				word = chr;
-				lexemList.push_back(pair<string, string>(word, "delimiter"));
+				lexemList.push_back(pair<string, string>(word, tokenName.at(TOKEN_STATUS::DELIMITER))); //"delimiter"));
 				word.clear();
 			}
 			i++;
@@ -174,13 +120,10 @@ LETTER_TYPES Analisator::getLetterType(char c) {
 string Analisator::getTextLexemType(string word) {
 	string type;
 	if (find(keywords.begin(), keywords.end(), word) != keywords.end()) {
-		type = "keyword";
-	}
-	else if (word[0] == '\"' && word[0] == word[word.size() - 1]) {
-		type = "string";
+		type = tokenName.at(TOKEN_STATUS::KEYWORD); // "keyword";
 	}
 	else if (isalpha(word[0])) {
-		type = "id";
+		type = tokenName.at(TOKEN_STATUS::ID); //"id";
 	}
 	else {
 		type = "err";
@@ -188,8 +131,31 @@ string Analisator::getTextLexemType(string word) {
 	return type;
 }
 
-void Analisator::generateTokensTable() {
-	for (auto token : lexemList) {
-		cout << token.first << "-" << token.second << endl;
+string Analisator::getNumberLexemType(string word) {
+	regex binPattern("^(0b)([0-1]+)$");
+	regex octPattern("^(0o)([0-7]+)$");
+	regex hexPattern("^(0x)([0-9a-fA-f]+)$");
+	regex decPattern("^(0|([1-9])([0-9]*))$");
+	cmatch result;
+		cout << "--------------" << endl;
+
+	if (regex_match(word.c_str(), result, decPattern))
+	{
+		for (size_t i = 0; i < result.size(); i++)
+		{
+			cout << result[i] << endl;
+		}
+	
 	}
+	else cout << "false" << endl;
+	return "try";
+}
+
+
+void Analisator::generateTokensTable() {
+	ofstream fout("output.txt");
+	for (auto token : lexemList) {
+		fout <<"token: "<< token.first << " value: " << token.second << endl;
+	}
+	fout.close();
 }

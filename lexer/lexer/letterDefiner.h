@@ -7,6 +7,7 @@
 #include <fstream>
 #include <algorithm>
 #include <utility>
+#include <regex>
 
 using namespace std;
 
@@ -19,12 +20,17 @@ const enum LETTER_TYPES {
 };
 
 const enum TOKEN_STATUS {
+	ERR,
+	NUM2,
+	NUM8,
+	NUM10,
+	NUM16,
+	ID,
 	KEYWORD,
 	DELIMITER,
 	OPERATOR,
-	NUMBER,
-	ID,
-	ERR
+	SINGLE_COMMENT,
+	MULTI_COMMENT
 };
 
 class letterDefiner {
@@ -36,11 +42,10 @@ private:
 	vector<char> letters;
 
 public:
-	map <TOKEN_STATUS, vector<LETTER_TYPES>> lettersOfTokenMap;
 	vector<string> initialKeywords();
 	vector<char> initialDelimiters();
 	vector<char> initialOperators();
 	vector<char> initialNumbers();
 	vector<char> initialLetters();
-	map <TOKEN_STATUS, vector<LETTER_TYPES>> generateLettersOfTokenMap();
+	map <TOKEN_STATUS, string> defineTokenNames();
 };
