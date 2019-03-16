@@ -6,14 +6,25 @@
 #include <iostream>
 #include <fstream>
 #include <algorithm>
+#include <utility>
 
 using namespace std;
 
 const enum LETTER_TYPES {
+	EMPTY,
 	LETTER,
+	NUM,
+	DEL,
+	OPERATION,
+};
+
+const enum TOKEN_STATUS {
+	KEYWORD,
+	DELIMITER,
+	OPERATOR,
 	NUMBER,
-	CHAR_DELIMITER,
-	CHAR_OPERATOR
+	ID,
+	ERR
 };
 
 class letterDefiner {
@@ -25,11 +36,11 @@ private:
 	vector<char> letters;
 
 public:
-	map <LETTER_TYPES, vector<char>> lettersMap;
+	map <TOKEN_STATUS, vector<LETTER_TYPES>> lettersOfTokenMap;
 	vector<string> initialKeywords();
 	vector<char> initialDelimiters();
 	vector<char> initialOperators();
 	vector<char> initialNumbers();
 	vector<char> initialLetters();
-	//map <LETTER_TYPES, vector<char>> generateLettersMap();
+	map <TOKEN_STATUS, vector<LETTER_TYPES>> generateLettersOfTokenMap();
 };

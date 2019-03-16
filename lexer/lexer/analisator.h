@@ -11,13 +11,6 @@
 
 using namespace std;
 
-const enum TOKEN_TYPES {
-	KEYWORD,
-	DELIMITER,
-	OPERATOR,
-	DEC_NUM
-};
-
 class Analisator {
 private:
 	vector<char> delimiters;
@@ -27,14 +20,18 @@ private:
 	vector<string> keywords;
 
 	letterDefiner letterDefiner;
-	map<TOKEN_TYPES, string> tokenNamesMap;
-	vector<string> lexemList;
+	map <TOKEN_STATUS, vector<LETTER_TYPES>> lettersOfTokenMap;
+	//map<TOKEN_TYPES, string> tokenNamesMap;
+	vector<pair<string, string>> lexemList;
 
 public:
 	Analisator();
-	map<TOKEN_TYPES, string> initialTokenNames();
+	//map<TOKEN_TYPES, string> initialTokenNames();
 	void readFile();
 	void parseLexems(string &fileLine);
-
+	void checkLexemTypes(string &fileLine);
+	LETTER_TYPES getLetterType(char c);
+	void generateTokensTable();
+	string getTextLexemType(string word);
 	void testCase();
 };
