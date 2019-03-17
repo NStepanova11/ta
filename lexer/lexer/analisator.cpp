@@ -22,9 +22,9 @@ void Analisator::readFile() {
 }
 
 void Analisator::testCase() {
+	//cout<< getNumberLexemType("11line");
 	readFile();
-	getNumberLexemType("9");
-	//generateTokensTable();
+	generateTokensTable();
 }
 
 void Analisator::checkLexemTypes(string &fileLine) {
@@ -66,7 +66,7 @@ void Analisator::checkLexemTypes(string &fileLine) {
 				currType = getLetterType(chr);
 			} while (currType != LETTER_TYPES::DEL && currType != LETTER_TYPES::OPERATION && i < fileLine.size());
 			//while ((currType == LETTER_TYPES::NUM) && i < fileLine.size());
-			lexemList.push_back(pair<string, string>(word, "number"));
+			lexemList.push_back(pair<string, string>(word, getNumberLexemType(word)));
 			cout << "\'" << word << "\'" << endl;
 			word.clear();
 		}
@@ -118,15 +118,18 @@ LETTER_TYPES Analisator::getLetterType(char c) {
 }
 
 string Analisator::getTextLexemType(string word) {
+	regex idPattern("^([a-zA-z])([\\w]*)$");
+	cmatch result;
+
 	string type;
 	if (find(keywords.begin(), keywords.end(), word) != keywords.end()) {
 		type = tokenName.at(TOKEN_STATUS::KEYWORD); // "keyword";
 	}
-	else if (isalpha(word[0])) {
+	else if (regex_match(word.c_str(), idPattern)) {
 		type = tokenName.at(TOKEN_STATUS::ID); //"id";
 	}
 	else {
-		type = "err";
+		type = TOKEN_STATUS::ERR;
 	}
 	return type;
 }
@@ -136,19 +139,29 @@ string Analisator::getNumberLexemType(string word) {
 	regex octPattern("^(0o)([0-7]+)$");
 	regex hexPattern("^(0x)([0-9a-fA-f]+)$");
 	regex decPattern("^(0|([1-9])([0-9]*))$");
+	regex floatPattern("^([0-9]+)(.)([1-9]+)");
 	cmatch result;
-		cout << "--------------" << endl;
 
-	if (regex_match(word.c_str(), result, decPattern))
-	{
-		for (size_t i = 0; i < result.size(); i++)
-		{
-			cout << result[i] << endl;
-		}
-	
+	string type;
+	if (regex_match(word.c_str(), result, binPattern)) {
+		type = tokenName.at(TOKEN_STATUS::NUM_2);
 	}
-	else cout << "false" << endl;
-	return "try";
+	else if (regex_match(word.c_str(), octPattern)) {
+		type = tokenName.at(TOKEN_STATUS::NUM_8);
+	}
+	else if (regex_match(word.c_str(), decPattern)) {
+		type = tokenName.at(TOKEN_STATUS::NUM_10);
+	}
+	else if (regex_match(word.c_str(), hexPattern)) {
+		type = tokenName.at(TOKEN_STATUS::NUM_16);
+	}
+	else if (regex_match(word.c_str(), floatPattern)) {
+		type = tokenName.at(TOKEN_STATUS::NUM_F);
+	}
+	else {
+		type = tokenName.at(TOKEN_STATUS::ERR);
+	}
+	return type;
 }
 
 

@@ -74,10 +74,11 @@ vector<string> letterDefiner::initialKeywords() {
 map <TOKEN_STATUS, string> letterDefiner::defineTokenNames() {
 	map <TOKEN_STATUS, string> tokenName = {
 		{ TOKEN_STATUS::ERR, "ERR"},
-		{ TOKEN_STATUS::NUM2, "NUM2" },
-		{ TOKEN_STATUS::NUM8, "NUM8" },
-		{ TOKEN_STATUS::NUM10, "NUM10" },
-		{ TOKEN_STATUS::NUM16, "NUM16" },
+		{ TOKEN_STATUS::NUM_2, "NUM_2" },
+		{ TOKEN_STATUS::NUM_8, "NUM_8" },
+		{ TOKEN_STATUS::NUM_10, "NUM_10" },
+		{ TOKEN_STATUS::NUM_16, "NUM_16" },
+		{ TOKEN_STATUS::NUM_F, "FLOAT"},
 		{ TOKEN_STATUS::ID, "ID" },
 		{ TOKEN_STATUS::KEYWORD, "KEYWORD" },
 		{ TOKEN_STATUS::DELIMITER, "DELIMITER" },

@@ -21,10 +21,11 @@ const enum LETTER_TYPES {
 
 const enum TOKEN_STATUS {
 	ERR,
-	NUM2,
-	NUM8,
-	NUM10,
-	NUM16,
+	NUM_2,
+	NUM_8,
+	NUM_10,
+	NUM_16,
+	NUM_F,
 	ID,
 	KEYWORD,
 	DELIMITER,
