@@ -65,6 +65,7 @@ vector<string> letterDefiner::initialKeywords() {
 	k.push_back("for");
 	k.push_back("break");
 	k.push_back("if");
+	k.push_back("then");
 	k.push_back("else");
 	k.push_back("println");
 	k.push_back("while");

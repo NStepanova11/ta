@@ -18,6 +18,7 @@ private:
 	vector<char> numbers;
 	vector<char> letters;
 	vector<string> keywords;
+	string multiComment;
 
 	letterDefiner letterDefiner;
 	map <TOKEN_STATUS, vector<LETTER_TYPES>> lettersOfTokenMap;
@@ -32,6 +33,7 @@ public:
 	void generateTokensTable();
 	string getTextLexemType(string word);
 	string getNumberLexemType(string word);
+	string getDivisionLexemType(string word);
 
 	void testCase();
 };

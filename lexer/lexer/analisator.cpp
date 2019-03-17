@@ -11,91 +11,104 @@ Analisator::Analisator()
 {
 }
 
+void Analisator::testCase() {
+	readFile();
+	generateTokensTable();
+	//cout << getDivisionLexemType("/*multi comment*/") << endl;
+}
+
+
 void Analisator::readFile() {
 	ifstream fin("input.txt");
 	string fileLine;
+	char ch;
+	while ((ch = fin.get()) != EOF) {
+		fileLine += ch;
+	}
+	//f << fileLine << endl;
+	checkLexemTypes(fileLine);
+
+	/*
 	while (getline(fin, fileLine))
 	{
 		checkLexemTypes(fileLine);
-	}
-	fin.close();	
-}
-
-void Analisator::testCase() {
-	//cout<< getNumberLexemType("11line");
-	readFile();
-	generateTokensTable();
+	}*/
+	fin.close();
 }
 
 void Analisator::checkLexemTypes(string &fileLine) {
 	LETTER_TYPES currType = LETTER_TYPES::EMPTY;
-
 	string word;
 	pair <string, string> lexemProps;
 	int i = 0;
 
 	while (i < fileLine.size())
 	{
-		stringstream ss;
-		string ltr;
 		char chr = fileLine[i];
 		currType = getLetterType(chr);
-		ss << chr;
-		ss >> ltr;
 
-		if (currType == LETTER_TYPES::LETTER) {
-			do
-			{
-				word += chr;
-				i++;
-				chr = fileLine[i];
-				currType = getLetterType(chr);
-			} while (currType!=LETTER_TYPES::DEL && currType != LETTER_TYPES::OPERATION && i < fileLine.size());
-			//while ((currType == LETTER_TYPES::LETTER || currType == LETTER_TYPES::NUM ) && i < fileLine.size());
-			lexemList.push_back(pair<string, string>(word, getTextLexemType(word)));
-			cout << "\'" << word << "\'" << endl;
-			word.clear();
-
-		}
-		else if (currType == LETTER_TYPES::NUM) {
-			do
-			{
-				word += chr;
-				i++;
-				chr = fileLine[i];
-				currType = getLetterType(chr);
-			} while (currType != LETTER_TYPES::DEL && currType != LETTER_TYPES::OPERATION && i < fileLine.size());
-			//while ((currType == LETTER_TYPES::NUM) && i < fileLine.size());
-			lexemList.push_back(pair<string, string>(word, getNumberLexemType(word)));
-			cout << "\'" << word << "\'" << endl;
-			word.clear();
-		}
-		else if (currType == LETTER_TYPES::OPERATION) {
-			do
-			{
-				word += chr;
-				i++;
-				chr = fileLine[i];
-				currType = getLetterType(chr);
-			} while ((currType == LETTER_TYPES::OPERATION) && i < fileLine.size());
-
-			lexemList.push_back(pair<string, string>(word, tokenName.at(TOKEN_STATUS::OPERATOR))); //"operation"));
-			cout << "\'" << word << "\'" << endl;
-			word.clear();
-		}
-		else if (currType == LETTER_TYPES::DEL) {
-			if (chr != ' ')
-			{
-				word = chr;
-				lexemList.push_back(pair<string, string>(word, tokenName.at(TOKEN_STATUS::DELIMITER))); //"delimiter"));
-				word.clear();
+			if (currType == LETTER_TYPES::LETTER) {
+				do
+				{
+					word += chr;
+					i++;
+					chr = fileLine[i];
+					currType = getLetterType(chr);
+				} while ((currType == LETTER_TYPES::LETTER || currType == LETTER_TYPES::NUM) && i < fileLine.size());
+				lexemList.push_back(pair<string, string>(word, getTextLexemType(word)));
 			}
-			i++;
+			else if (currType == LETTER_TYPES::NUM) {
+				do
+				{
+					word += chr;
+					i++;
+					chr = fileLine[i];
+					currType = getLetterType(chr);
+				} while ((currType == LETTER_TYPES::LETTER || currType == LETTER_TYPES::NUM) && i < fileLine.size());
+				lexemList.push_back(pair<string, string>(word, getNumberLexemType(word)));
+			}
+			else if (currType == LETTER_TYPES::OPERATION) {
+				word = chr;
+				i++;
+
+				if (chr == '\/' && fileLine[i] == chr) {
+					bool eol = false;
+					do
+					{
+						if (fileLine[i] != '\n')
+							word += fileLine[i];
+						else
+							eol = true;
+						i++;
+
+					} while (!eol && i<fileLine.size());
+				}
+				else if (chr == '\/' && fileLine[i] == '*')
+				{
+					do
+					{
+						if (fileLine[i] == '\n')
+							word += ' ';
+						else
+							word += fileLine[i];
+						i++;
+					} while (i < fileLine.size() && !(word[word.size() - 1] == '\/' && word[word.size() - 2] == '*'));
+				}
+				lexemList.push_back(pair<string, string>(word, getDivisionLexemType(word)));
+			}
+			else if (currType == LETTER_TYPES::DEL) {
+				if (chr != ' ')
+				{
+					word = chr;
+					lexemList.push_back(pair<string, string>(word, tokenName.at(TOKEN_STATUS::DELIMITER)));
+				}
+				i++;
+			}
+			else {
+				i++;
+			}
+			word.clear();
 		}
-		else {
-			i++;
-		}
-	}
 }
 
 LETTER_TYPES Analisator::getLetterType(char c) {
@@ -139,7 +152,7 @@ string Analisator::getNumberLexemType(string word) {
 	regex octPattern("^(0o)([0-7]+)$");
 	regex hexPattern("^(0x)([0-9a-fA-f]+)$");
 	regex decPattern("^(0|([1-9])([0-9]*))$");
-	regex floatPattern("^([0-9]+)(.)([1-9]+)");
+	regex floatPattern("^([0-9]+)(.)([1-9]+)$");
 	cmatch result;
 
 	string type;
@@ -164,6 +177,26 @@ string Analisator::getNumberLexemType(string word) {
 	return type;
 }
 
+string Analisator::getDivisionLexemType(string word) {
+	regex singleComPattern("(\/\/)(.+?)");
+	regex multiComPattern("^(\/.*)([\\w]*)(.*\/)$");
+	cmatch result;
+
+	string type;
+	if (regex_match(word.c_str(), result, singleComPattern)) {
+		type = tokenName.at(TOKEN_STATUS::SINGLE_COMMENT);
+	}
+	else if (regex_match(word.c_str(), multiComPattern)) {
+		type = tokenName.at(TOKEN_STATUS::MULTI_COMMENT);
+	}
+	else if (word == "\/") {
+		type = tokenName.at(TOKEN_STATUS::DELIMITER);
+	}
+	else {
+		type = tokenName.at(TOKEN_STATUS::ERR);
+	}
+	return type;
+}
 
 void Analisator::generateTokensTable() {
 	ofstream fout("output.txt");
