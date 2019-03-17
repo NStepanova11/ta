@@ -14,7 +14,7 @@ Analisator::Analisator()
 void Analisator::testCase() {
 	readFile();
 	generateTokensTable();
-	//cout << getDivisionLexemType("/*multi comment*/") << endl;
+//	cout << getNumberLexemType("5.654317") << endl;
 }
 
 
@@ -153,6 +153,7 @@ string Analisator::getNumberLexemType(string word) {
 	regex hexPattern("^(0x)([0-9a-fA-f]+)$");
 	regex decPattern("^(0|([1-9])([0-9]*))$");
 	regex floatPattern("^([0-9]+)(.)([1-9]+)$");
+	regex expPattern("([0-9]+)(.?)([0-9]+)(e?)(-?)([0-9]*)");
 	cmatch result;
 
 	string type;
@@ -170,6 +171,9 @@ string Analisator::getNumberLexemType(string word) {
 	}
 	else if (regex_match(word.c_str(), floatPattern)) {
 		type = tokenName.at(TOKEN_STATUS::NUM_F);
+	}
+	else if (regex_match(word.c_str(), expPattern)) {
+		type = tokenName.at(TOKEN_STATUS::E);
 	}
 	else {
 		type = tokenName.at(TOKEN_STATUS::ERR);

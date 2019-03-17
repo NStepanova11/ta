@@ -80,6 +80,7 @@ map <TOKEN_STATUS, string> letterDefiner::defineTokenNames() {
 		{ TOKEN_STATUS::NUM_10, "NUM_10" },
 		{ TOKEN_STATUS::NUM_16, "NUM_16" },
 		{ TOKEN_STATUS::NUM_F, "FLOAT"},
+		{ TOKEN_STATUS::E, "EXP" },
 		{ TOKEN_STATUS::ID, "ID" },
 		{ TOKEN_STATUS::KEYWORD, "KEYWORD" },
 		{ TOKEN_STATUS::DELIMITER, "DELIMITER" },

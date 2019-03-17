@@ -26,6 +26,7 @@ const enum TOKEN_STATUS {
 	NUM_10,
 	NUM_16,
 	NUM_F,
+	E,
 	ID,
 	KEYWORD,
 	DELIMITER,
