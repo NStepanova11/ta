@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <sstream>
 #include "letterDefiner.h"
+#include <iomanip>
 
 using namespace std;
 

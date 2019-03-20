@@ -25,14 +25,7 @@ void Analisator::readFile() {
 	while ((ch = fin.get()) != EOF) {
 		fileLine += ch;
 	}
-	//f << fileLine << endl;
 	checkLexemTypes(fileLine);
-
-	/*
-	while (getline(fin, fileLine))
-	{
-		checkLexemTypes(fileLine);
-	}*/
 	fin.close();
 }
 
@@ -64,7 +57,7 @@ void Analisator::checkLexemTypes(string &fileLine) {
 					i++;
 					chr = fileLine[i];
 					currType = getLetterType(chr);
-				} while ((currType == LETTER_TYPES::LETTER || currType == LETTER_TYPES::NUM) && i < fileLine.size());
+				} while ((currType == LETTER_TYPES::LETTER || currType == LETTER_TYPES::NUM || chr=='-' || chr == '+') && i < fileLine.size());
 				lexemList.push_back(pair<string, string>(word, getNumberLexemType(word)));
 			}
 			else if (currType == LETTER_TYPES::OPERATION) {
@@ -148,12 +141,12 @@ string Analisator::getTextLexemType(string word) {
 }
 
 string Analisator::getNumberLexemType(string word) {
-	regex binPattern("^(0b)([0-1]+)$");
-	regex octPattern("^(0o)([0-7]+)$");
-	regex hexPattern("^(0x)([0-9a-fA-f]+)$");
-	regex decPattern("^(0|([1-9])([0-9]*))$");
-	regex floatPattern("^([0-9]+)(.)([1-9]+)$");
-	regex expPattern("([0-9]+)(.?)([0-9]+)(e?)(-?)([0-9]*)");
+	regex binPattern("(0b)([0-1]+)");
+	regex octPattern("(0o)([0-7]+)");
+	regex hexPattern("(0x)([0-9a-fA-F]+)");
+	regex decPattern("(0|([1-9])([0-9]*))");
+	regex floatPattern("(0|([1-9])([0-9]*))([.]{1})([1-9]+)");
+	regex expPattern("(0|([1-9])([0-9]*))([.]?)([0-9]*)([e]{1})([-]?)([0-9]+)");
 	cmatch result;
 
 	string type;
@@ -205,7 +198,8 @@ string Analisator::getDivisionLexemType(string word) {
 void Analisator::generateTokensTable() {
 	ofstream fout("output.txt");
 	for (auto token : lexemList) {
-		fout <<"token: "<< token.first << " value: " << token.second << endl;
+		fout.setf(ios::left);
+		fout <<"token: "<< setw(14)<<token.second << " value: " <<setw(100)<< token.first << endl;
 	}
 	fout.close();
 }
