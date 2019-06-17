@@ -18,6 +18,7 @@ private:
 	vector<char> operators;
 	vector<char> numbers;
 	vector<char> letters;
+	vector<char> brackets;
 	vector<string> keywords;
 	string multiComment;
 

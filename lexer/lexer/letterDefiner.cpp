@@ -20,6 +20,17 @@ vector<char> letterDefiner::initialOperators() {
 	return o;
 }
 
+vector <char>letterDefiner::initialBrackets(){
+	vector<char> b;
+	b.push_back('{');
+	b.push_back('}');
+	b.push_back('(');
+	b.push_back(')');
+	b.push_back('[');
+	b.push_back(']');
+	return b;
+}
+
 vector <char> letterDefiner::initialNumbers() {
 	vector<char> n;
 	char num = '0';
@@ -85,6 +96,7 @@ map <TOKEN_STATUS, string> letterDefiner::defineTokenNames() {
 		{ TOKEN_STATUS::KEYWORD, "KEYWORD" },
 		{ TOKEN_STATUS::DELIMITER, "DELIMITER" },
 		{ TOKEN_STATUS::OPERATOR, "OPERATOR" },
+		{ TOKEN_STATUS::BRACKET, "BRACKET" },
 		{ TOKEN_STATUS::SINGLE_COMMENT, "SINGLE_COMMENT" },
 		{ TOKEN_STATUS::MULTI_COMMENT, "MULTI_COMMENT" }
 	};

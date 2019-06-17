@@ -1,0 +1,2 @@
+S ::= a A | a B | b U | b F
+A ::= bca F | bca G

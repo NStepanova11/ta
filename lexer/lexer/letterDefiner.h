@@ -17,6 +17,7 @@ const enum LETTER_TYPES {
 	NUM,
 	DEL,
 	OPERATION,
+	BRACKETS
 };
 
 const enum TOKEN_STATUS {
@@ -31,6 +32,7 @@ const enum TOKEN_STATUS {
 	KEYWORD,
 	DELIMITER,
 	OPERATOR,
+	BRACKET,
 	SINGLE_COMMENT,
 	MULTI_COMMENT
 };
@@ -42,6 +44,7 @@ private:
 	vector<char> operators;
 	vector<char> numbers;
 	vector<char> letters;
+	vector<char> brackets;
 
 public:
 	vector<string> initialKeywords();
@@ -49,5 +52,6 @@ public:
 	vector<char> initialOperators();
 	vector<char> initialNumbers();
 	vector<char> initialLetters();
+	vector<char> initialBrackets();
 	map <TOKEN_STATUS, string> defineTokenNames();
 };

@@ -7,6 +7,7 @@ Analisator::Analisator()
 	,numbers(letterDefiner.initialNumbers())
 	,operators(letterDefiner.initialOperators())
 	,delimiters(letterDefiner.initialDelimiters())
+	,brackets(letterDefiner.initialBrackets())
 	,tokenName(letterDefiner.defineTokenNames())
 {
 }
@@ -97,6 +98,11 @@ void Analisator::checkLexemTypes(string &fileLine) {
 				}
 				i++;
 			}
+			else if (currType == LETTER_TYPES::BRACKETS) {
+				word = chr;
+				lexemList.push_back(pair<string, string>(word, tokenName.at(TOKEN_STATUS::BRACKET)));
+				i++;
+			}
 			else {
 				i++;
 			}
@@ -119,20 +125,24 @@ LETTER_TYPES Analisator::getLetterType(char c) {
 	else if (find(operators.begin(), operators.end(), c) != operators.end()) {
 		letterType = LETTER_TYPES::OPERATION;
 	}
+	else if (find(brackets.begin(), brackets.end(), c) != brackets.end()) {
+		letterType = LETTER_TYPES::BRACKETS;
+	}
 	else letterType = LETTER_TYPES::EMPTY;
 	return letterType;
 }
 
+//для определения ключевое слово или имя переменной
 string Analisator::getTextLexemType(string word) {
 	regex idPattern("^([a-zA-z])([\\w]*)$");
 	cmatch result;
 
 	string type;
 	if (find(keywords.begin(), keywords.end(), word) != keywords.end()) {
-		type = tokenName.at(TOKEN_STATUS::KEYWORD); // "keyword";
+		type = tokenName.at(TOKEN_STATUS::KEYWORD); 
 	}
 	else if (regex_match(word.c_str(), idPattern)) {
-		type = tokenName.at(TOKEN_STATUS::ID); //"id";
+		type = tokenName.at(TOKEN_STATUS::ID); 
 	}
 	else {
 		type = TOKEN_STATUS::ERR;
@@ -140,6 +150,7 @@ string Analisator::getTextLexemType(string word) {
 	return type;
 }
 
+//для определения типа числа
 string Analisator::getNumberLexemType(string word) {
 	regex binPattern("(0b)([0-1]+)");
 	regex octPattern("(0o)([0-7]+)");
@@ -174,6 +185,7 @@ string Analisator::getNumberLexemType(string word) {
 	return type;
 }
 
+//для определения / - это операция или комментарий
 string Analisator::getDivisionLexemType(string word) {
 	regex singleComPattern("(\/\/)(.+?)");
 	regex multiComPattern("^(\/.*)([\\w]*)(.*\/)$");
@@ -187,7 +199,7 @@ string Analisator::getDivisionLexemType(string word) {
 		type = tokenName.at(TOKEN_STATUS::MULTI_COMMENT);
 	}
 	else if (word == "\/") {
-		type = tokenName.at(TOKEN_STATUS::DELIMITER);
+		type = tokenName.at(TOKEN_STATUS::OPERATOR);
 	}
 	else {
 		type = tokenName.at(TOKEN_STATUS::ERR);
